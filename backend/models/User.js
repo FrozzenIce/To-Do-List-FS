@@ -56,7 +56,7 @@ const findByEmailOrUsername = async (identifier, includePassword = false) => {
 /**
  * Finds a user by user id
  * 
- * @param {string} id - User Id
+ * @param {number} id - User Id
  * @return {Promise<Array>} - An array containing the matching user record.
  */
 const findUserById = async (id) => {
@@ -72,7 +72,7 @@ const findUserById = async (id) => {
 /**
  * Updates a user detail
  * 
- * @param {string} id - User Id
+ * @param {number} id - User Id
  * @param {Object} updates - Update information.
  * @param {string} updates.username - Updated username of the user.
  * @param {string} updates.email - Updated email address of the user.
@@ -96,7 +96,7 @@ const updateUser = async (id, updates) =>{
 
   const setClause = entries
   .map(([key]) => `${ALLOWED_UPDATE_FIELDS[key]} = ?`)
-  .join;
+  .join(', ');
 
   const values = entries.map(([, value]) => value);
 
@@ -113,7 +113,7 @@ const updateUser = async (id, updates) =>{
 /**
  * Deletes a user by user id
  * 
- * @param {string} id - User Id
+ * @param {number} id - User Id
  * @return {Promise<Object>} - An array containing the matching user record.
  */
 const deleteUser = async (id) => {
@@ -123,4 +123,12 @@ const deleteUser = async (id) => {
   `;
   const [result] = await db.query(sql, [id]);
   return result;
+};
+
+module.exports = {
+  createUser,
+  findByEmailOrUsername,
+  findUserById,
+  updateUser,
+  deleteUser
 };
