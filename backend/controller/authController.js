@@ -1,6 +1,6 @@
 const User = require('../models/User');
-const bcrypt = require('bcrypt.js');
-const jwt = requrie('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 /**
  *  User Login Handler
@@ -9,9 +9,9 @@ exports.login = async (req, res, next) => {
     try {
         const { identifier, password } = req.body;
 
-        const results = await User.findByEmailOrUsername(identifier);
+        const results = await User.findByEmailOrUsername(identifier, true);
 
-        if(results.length === 0) {
+        if (results.length === 0) {
             const authError = new Error('Invalid credentials');
             authError.status = 401;
             return next(authError);
@@ -20,7 +20,7 @@ exports.login = async (req, res, next) => {
         const user = results[0];
         const isMatch = await bcrypt.compare(password, user.password);
 
-        if(!isMatch) {
+        if (!isMatch) {
             const authError = new Error('Invalid Credentials');
             authError.status = 401;
             return next(authError);
@@ -33,7 +33,7 @@ exports.login = async (req, res, next) => {
             },
             process.env.JWT_SECRET,
             {
-                expiresIn: 'id',
+                expiresIn: '1d',
             }
         );
 
@@ -41,8 +41,8 @@ exports.login = async (req, res, next) => {
             success: true,
             token,
         });
-    } catch(err) {
-        next (err);
+    } catch (err) {
+        next(err);
     }
 };
 
@@ -54,11 +54,11 @@ exports.changePassword = async (req, res, next) => {
         const userId = req.user.user_id;
         const { currentPassword, newPassword } = req.body;
 
-        const results = await User.findByEmailOrUsername(req.user.username);
+        const results = await User.findByEmailOrUsername(req.user.username, true);
         if (results.length === 0) return next(new Error('User not found'));
         const user = result[0];
         const isMatch = await bcrypt.compare(currentPassword, user.password);
-        if(!isMatch) {
+        if (!isMatch) {
             const err = new Error('Current password invalid');
             err.status = 401;
             return next(err);
@@ -82,29 +82,33 @@ exports.changePassword = async (req, res, next) => {
 exports.register = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
-        
+
         const existsingUsername = await User.findByEmailOrUsername(username);
         const existingEmail = await User.findByEmailOrUsername(email);
 
-        if(existsingUsername.length > 0) {
+        if (existsingUsername.length > 0) {
             const conflict = new Error('Username already taken');
             conflict.status = 409;
             return next(conflict);
         }
 
-        if(existingEmail.length > 0) {
+        if (existingEmail.length > 0) {
             const conflict = new Error('Email already taken');
             conflict.status = 409;
             return next(conflict);
         }
 
-        const hashedPassword = await bcrypt.has(password, 10);
-        const result = await User.createUser(username, email, hashedPassword);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const result = await User.createUser({
+            username,
+            email,
+            password: hashedPassword
+        });
 
         res.status(201).json({
             success: true,
             message: 'User account created successfully',
-            userId: result.insertID
+            userId: result.insertId
         });
     } catch (err) {
         next(err);
@@ -120,17 +124,17 @@ exports.deleteUser = async (req, res, next) => {
 
         const { currentPassword } = req.body;
 
-        const result = await User.findUserByEmailorUsername(req.user.username);
-        if(result.length === 0) {
-            const deletionError = 'User not found';
+        const result = await User.findByEmailOrUsername(req.user.username);
+        if (result.length === 0) {
+            const deletionError = new Error('User not found');
             return next(deletionError);
         }
 
         const user = result[0];
         const isMatch = await bcrypt.compare(currentPassword, user.password);
-        if(!isMatch) {
-            const deletionError = 'Current password invalid';
-            deletionError.status =  401;
+        if (!isMatch) {
+            const deletionError = new Error('Current password invalid');
+            deletionError.status = 401;
             return next(deletionError);
         }
         await User.deleteUser(userId);
@@ -138,6 +142,79 @@ exports.deleteUser = async (req, res, next) => {
             success: true,
             message: 'User deleted'
         });
+    } catch (err) {
+        next(err);
+    }
+}
+
+/**
+ * Update user details
+ */
+exports.editUserDetails = async (req, res, next) => {
+    try {
+        const userId = req.user.user_id;
+        const { username, email, currentPassword } = req.body;
+
+        const existsingUsername = await User.findByEmailOrUsername(username);
+        const existsingEmail = await User.findByEmailOrUsername(email);
+
+        const result = await User.findByEmailOrUsername(req.user.username, true);
+        if (result.length === 0) {
+            const editError = 'User not found';
+            return next(editError);
+        }
+
+        const user = result[0];
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            const editError = new Error('Current password invalid');
+            editError.status = 401;
+            return next(editError);
+        }
+
+        if (existsingUsername.length > 0 && existsingUsername[0].user_id !== userId) {
+            const editError = new Error('Username already taken');
+            editError.status = 409;
+            return next(editError);
+        }
+
+        if (existsingEmail.length > 0 && existsingEmail[0].user_id !== userId) {
+            const editError = new Error('Email already taken');
+            editError.status = 409;
+            return next(editError);
+        }
+
+        await User.updateUser(userId, {
+            username: username,
+            email: email
+        });
+
+        res.json({
+            success: true,
+            message: 'User details updated successfully'
+        })
+    } catch (err) {
+        next(err);
+    }
+}
+
+/**
+ * Get Me
+ */
+exports.getMe = async (req, res, next) => {
+    try {
+        const userId = req.user.user_id;
+        
+        const result = await User.findUserById(userId);
+        if(result.length === 0) {
+            const getError = new Error('User not found');
+            getError.status = 404;
+            return next(getError);
+        }
+        res.json({
+            success: true,
+            user: result[0]
+        })
     } catch (err) {
         next (err);
     }

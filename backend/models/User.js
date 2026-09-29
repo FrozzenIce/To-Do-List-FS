@@ -42,8 +42,8 @@ const createUser = async (user) => {
  */
 const findByEmailOrUsername = async (identifier, includePassword = false) => {
   const columns = includePassword
-  ? AUTH_USERS_COLUMNS
-  : USERS_COLUMNS;
+    ? AUTH_USERS_COLUMNS
+    : USERS_COLUMNS;
   const sql = `
     SELECT ${columns}
     FROM users
@@ -59,9 +59,12 @@ const findByEmailOrUsername = async (identifier, includePassword = false) => {
  * @param {number} id - User Id
  * @return {Promise<Array>} - An array containing the matching user record.
  */
-const findUserById = async (id) => {
+const findUserById = async (id, includePassword = false) => {
+  const columns = includePassword
+    ? AUTH_USERS_COLUMNS
+    : USERS_COLUMNS;
   const sql = `
-    SELECT ${USERS_COLUMNS}
+    SELECT ${columns}
     FROM users
     WHERE user_id = ?
   `;
@@ -84,19 +87,19 @@ const ALLOWED_UPDATE_FIELDS = {
   email: "email",
   password: "password"
 };
-const updateUser = async (id, updates) =>{
+const updateUser = async (id, updates) => {
   const entries = Object.entries(updates)
-  .filter(([key, value])=> {
-    return ALLOWED_UPDATE_FIELDS[key] && value != undefined;
-  });
+    .filter(([key, value]) => {
+      return ALLOWED_UPDATE_FIELDS[key] && value != undefined;
+    });
 
   if (entries.length === 0) {
-    throw new Error ("No valid entries to update");
+    throw new Error("No valid entries to update");
   }
 
   const setClause = entries
-  .map(([key]) => `${ALLOWED_UPDATE_FIELDS[key]} = ?`)
-  .join(', ');
+    .map(([key]) => `${ALLOWED_UPDATE_FIELDS[key]} = ?`)
+    .join(', ');
 
   const values = entries.map(([, value]) => value);
 
