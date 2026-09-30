@@ -36,13 +36,6 @@ exports.deleteCategory = async (req, res, next) => {
         const userId = req.user.user_id;
         const categoryId = req.category.category_id;
 
-        const result = await Category.getCategoryById(categoryId, userId);
-        if (result.length === 0) {
-            const deletionError = new Error('Category not found');
-            deletionError.status = 404;
-            return next(deletionError);
-        }
-
         await Category.deleteCategory(categoryId, userId);
 
         res.json({
@@ -62,13 +55,6 @@ exports.updateCategory = async (req, res, next) => {
         const userId = req.user.user_id;
         const categoryId = req.category.category_id;
         const { categoryName } = req.body;
-
-        const result = await Category.getCategoryById(categoryId, userId);
-        if (result.length === 0) {
-            const updateError = new Error('Category not found');
-            updateError.status = 404;
-            return next(updateError);
-        }
 
         const existingCategoryName = await Category.getCategoryByName(categoryName, userId);
         if (existingCategoryName.length > 0 && existingCategoryName[0].category_id !== categoryId) {
@@ -96,7 +82,7 @@ exports.getAllCategories = async (req, res, next) => {
         const userId = req.user.user_id;
 
         const categories = await Category.getAllCategories(userId);
-        if(results.length === 0) {
+        if (results.length === 0) {
             const getError = new Error('Categories not found');
             getError.status = 404;
             return next(getError);
@@ -108,7 +94,7 @@ exports.getAllCategories = async (req, res, next) => {
         })
 
     } catch (err) {
-        next (err)
+        next(err)
     }
 }
 
@@ -117,22 +103,12 @@ exports.getAllCategories = async (req, res, next) => {
  */
 exports.getCategoryById = async (req, res, next) => {
     try {
-        const userId = req.user.user_id;
-        const categoryId = req.category.category_id;
-
-        const category = await Category.getCategoryById(categoryId, userId);
-        if(result.length === 0) {
-            const getError = new Error('Category not found');
-            getError.status = 404;
-            return next(getError);
-        }
-
         res.json({
             success: true,
-            category: category[0]
+            category: req.category
         })
 
     } catch (err) {
-        next (err)
+        next(err)
     }
 }

@@ -79,7 +79,7 @@ exports.changePassword = async (req, res, next) => {
 /**
  * Create a new user
  */
-exports.register = async (req, res, next) => {
+exports.createUser = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
 
@@ -204,9 +204,9 @@ exports.editUserDetails = async (req, res, next) => {
 exports.getMe = async (req, res, next) => {
     try {
         const userId = req.user.user_id;
-        
+
         const result = await User.findUserById(userId);
-        if(result.length === 0) {
+        if (result.length === 0) {
             const getError = new Error('User not found');
             getError.status = 404;
             return next(getError);
@@ -216,6 +216,6 @@ exports.getMe = async (req, res, next) => {
             user: result[0]
         })
     } catch (err) {
-        next (err);
+        next(err);
     }
 }
