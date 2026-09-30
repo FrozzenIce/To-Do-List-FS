@@ -82,11 +82,6 @@ exports.getAllCategories = async (req, res, next) => {
         const userId = req.user.user_id;
 
         const categories = await Category.getAllCategories(userId);
-        if (results.length === 0) {
-            const getError = new Error('Categories not found');
-            getError.status = 404;
-            return next(getError);
-        }
 
         res.json({
             success: true,

@@ -1,11 +1,11 @@
 const db = require("../config/db");
 
 const AUTH_USERS_COLUMNS = `
-  user_id, username, email, password, create_at, updated_at
+  user_id, username, email, password, created_at, updated_at
 `;
 
 const USERS_COLUMNS = `
-  user_id, username, email, create_at, updated_at
+  user_id, username, email, created_at, updated_at
 `;
 
 

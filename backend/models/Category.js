@@ -59,6 +59,19 @@ const createCategory = async (categoryName, userId) => {
 }
 
 /**
+ * Creates none category
+ */
+const createNoneCategory = async (userId) => {
+    const sql = `
+        INSERT INTO categories (category_name, user_id)
+        VALUES ('NONE', ?)
+    `;
+
+    const [result] = await db.query(sql, [userId]);
+    return result;
+}
+
+/**
  * Deletes a category
  * @param {number} id - Category ID
  * @param {number} userId - User ID
@@ -94,6 +107,7 @@ module.exports = {
     getCategoryById,
     getCategoryByName,
     createCategory,
+    createNoneCategory,
     deleteCategory,
     updateCategory
 }

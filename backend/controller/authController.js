@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Category = require('../models/Category');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -79,14 +80,14 @@ exports.changePassword = async (req, res, next) => {
 /**
  * Create a new user
  */
-exports.createUser = async (req, res, next) => {
+exports.register = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
 
-        const existsingUsername = await User.findByEmailOrUsername(username);
+        const existingUsername = await User.findByEmailOrUsername(username);
         const existingEmail = await User.findByEmailOrUsername(email);
 
-        if (existsingUsername.length > 0) {
+        if (existingUsername.length > 0) {
             const conflict = new Error('Username already taken');
             conflict.status = 409;
             return next(conflict);
@@ -105,6 +106,8 @@ exports.createUser = async (req, res, next) => {
             password: hashedPassword
         });
 
+        await Category.createNoneCategory(result.insertId)
+
         res.status(201).json({
             success: true,
             message: 'User account created successfully',
@@ -122,7 +125,7 @@ exports.deleteUser = async (req, res, next) => {
     try {
         const userId = req.user.user_id;
 
-        const { currentPassword } = req.body;
+        const { password } = req.body;
 
         const result = await User.findByEmailOrUsername(req.user.username);
         if (result.length === 0) {
@@ -131,7 +134,7 @@ exports.deleteUser = async (req, res, next) => {
         }
 
         const user = result[0];
-        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             const deletionError = new Error('Current password invalid');
             deletionError.status = 401;
@@ -153,7 +156,11 @@ exports.deleteUser = async (req, res, next) => {
 exports.editUserDetails = async (req, res, next) => {
     try {
         const userId = req.user.user_id;
-        const { username, email, currentPassword } = req.body;
+        const { username, email, password } = req.body;
+
+        if(username === "" || email === "") {
+            const editError = 'Username or Email';
+        }
 
         const existsingUsername = await User.findByEmailOrUsername(username);
         const existsingEmail = await User.findByEmailOrUsername(email);
@@ -165,7 +172,7 @@ exports.editUserDetails = async (req, res, next) => {
         }
 
         const user = result[0];
-        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             const editError = new Error('Current password invalid');
             editError.status = 401;

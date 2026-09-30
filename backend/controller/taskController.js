@@ -6,7 +6,12 @@ const Task = require('../models/Task');
 exports.createTask = async (req, res, next) => {
     try {
         const userId = req.user.user_id;
-        const { taskTitle, taskPriorityId, taskCategoryId, taskStatus } = req.body;
+        const { 
+            taskTitle,
+            taskPriorityId,
+            taskCategoryId,
+            taskStatus
+        } = req.body;
 
         const result = await Task.createTask({
             priority_id: taskPriorityId,
@@ -121,7 +126,7 @@ exports.getTaskById = async (req, res, next) => {
 exports.getTaskByCategory = async (req, res, next) => {
     try {
         const userId = req.user.user_id;
-        const categoryId = req.params.category_id;
+        const categoryId = req.params.categoryId;
 
         const tasks = await Task.getTaskByCategory(categoryId, userId);
         if (tasks.length === 0) {
@@ -173,7 +178,7 @@ exports.getTaskByStatus = async (req, res, next) => {
 exports.getTaskByPriority = async (req, res, next) => {
     try {
         const userId = req.user.user_id;
-        const priorityId = req.params.priority_id;
+        const priorityId = req.params.priorityId;
 
         const tasks = await Task.getTaskByPriority(priorityId, userId);
         if (tasks.length === 0) {
