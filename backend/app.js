@@ -19,6 +19,6 @@ app.get('/api/health', (req, res) => {
     success: true,
     message: 'App is running'
   });
-})
+});
 
 module.exports = app;

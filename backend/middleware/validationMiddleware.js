@@ -6,13 +6,13 @@ const validateRegister = (req, res, next) => {
     if (!username || !email || !password) {
         return res.status(400).json({
             success: false,
-            message: 'Username, email and password are required'
+            message: 'Username, email, and password are required'
         });
     }
 
     if (typeof username !== 'string' || username.trim().length < 3) {
         return res.status(400).json({
-            success: true,
+            success: false,
             message: 'Username must be at least 3 characters long'
         });
     }
@@ -27,7 +27,7 @@ const validateRegister = (req, res, next) => {
     if (typeof password !== 'string' || password.trim().length < 6) {
         return res.status(400).json({
             success: false,
-            message: 'Password must be at least more than 6 characters long'
+            message: 'Password must be at least 6 characters long'
         });
     }
     next();
@@ -53,7 +53,7 @@ const validateUserUpdate = (req, res, next) => {
     }
 
     if (email !== undefined) {
-        if (typeof email !== 'string' || email.includes('@')) {
+        if (typeof email !== 'string' || !email.includes('@')) {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid email address'
@@ -98,7 +98,7 @@ const validatePasswordChange = (req, res, next) => {
     }
 
     next();
-}
+};
 
 // CATEGORY VALIDATIONS
 
@@ -120,7 +120,7 @@ const validateCategoryCreate = (req, res, next) => {
     }
 
     next();
-}
+};
 
 const validateCategoryUpdate = (req, res, next) => {
     const { categoryName } = req.body;
@@ -140,7 +140,7 @@ const validateCategoryUpdate = (req, res, next) => {
     }
 
     next();
-}
+};
 
 // TASK VALIDATIONS
 

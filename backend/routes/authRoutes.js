@@ -10,7 +10,7 @@ router.post('/login', authController.login);
 
 router.get('/me', authMiddleware, authController.getMe);
 router.put('/me', authMiddleware, validationMiddleware.validateUserUpdate, authController.editUserDetails);
-router.put('/change-password',authMiddleware, validationMiddleware.validatePasswordChange, authController.changePassword);
+router.put('/change-password', authMiddleware, validationMiddleware.validatePasswordChange, authController.changePassword);
 router.delete('/me', authMiddleware, authController.deleteUser);
 
 module.exports = router;

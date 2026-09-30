@@ -5,13 +5,14 @@ const TASK_COLUMNS = `
 `;
 
 /**
- * Creates a new task.
+ * Create a new task.
  *
  * @param {Object} task - Task data.
  * @param {number} task.priority_id - Priority ID.
  * @param {number} task.category_id - Category ID.
  * @param {string} task.status - Task status.
  * @param {string} task.title - Task title.
+ * @param {number} task.user_id - User ID.
  * @returns {Promise<Object>} The database insert result.
  */
 const createTask = async (task) => {
@@ -30,11 +31,12 @@ const createTask = async (task) => {
 };
 
 /**
- * Gets all tasks.
+ * Get all tasks.
  *
+ * @param {number} userId - User ID.
  * @returns {Promise<Array>} An array of all tasks.
  */
-const getAllTask = async (userId) => {
+const getAllTasks = async (userId) => {
     const sql = `
         SELECT ${TASK_COLUMNS}
         FROM tasks
@@ -46,9 +48,10 @@ const getAllTask = async (userId) => {
 };
 
 /**
- * Gets a task by its ID.
+ * Get a task by its ID.
  *
  * @param {number} id - The task ID.
+ * @param {number} userId - User ID.
  * @returns {Promise<Array>} An array containing the matching task.
  */
 const getTaskById = async (id, userId) => {
@@ -62,9 +65,10 @@ const getTaskById = async (id, userId) => {
 };
 
 /**
- * Gets tasks by category.
+ * Get tasks by category.
  *
- * @param {number} category - The category ID.
+ * @param {number} categoryId - The category ID.
+ * @param {number} userId - User ID.
  * @returns {Promise<Array>} An array of tasks in the category.
  */
 const getTaskByCategory = async (categoryId, userId) => {
@@ -78,9 +82,10 @@ const getTaskByCategory = async (categoryId, userId) => {
 };
 
 /**
- * Gets tasks by status.
+ * Get tasks by status.
  *
  * @param {string} status - The task status.
+ * @param {number} userId - User ID.
  * @returns {Promise<Array>} An array of tasks with the given status.
  */
 const getTaskByStatus = async (status, userId) => {
@@ -94,23 +99,24 @@ const getTaskByStatus = async (status, userId) => {
 };
 
 /**
- * Gets tasks by priority.
+ * Get tasks by priority.
  *
- * @param {number} priority - The priority ID.
+ * @param {number} priorityId - The priority ID.
+ * @param {number} userId - User ID.
  * @returns {Promise<Array>} An array of tasks with the given priority.
  */
-const getTaskByPriority = async (priority, userId) => {
+const getTaskByPriority = async (priorityId, userId) => {
     const sql = `
         SELECT ${TASK_COLUMNS}
         FROM tasks
         WHERE priority_id = ? AND user_id = ?
     `;
-    const [rows] = await db.query(sql, [priority, userId]);
+    const [rows] = await db.query(sql, [priorityId, userId]);
     return rows;
 };
 
 /**
- * Updates an existing task.
+ * Update an existing task.
  *
  * @param {number} id - The task ID.
  * @param {Object} task - Updated task data.
@@ -118,6 +124,7 @@ const getTaskByPriority = async (priority, userId) => {
  * @param {number} task.category_id - Category ID.
  * @param {string} task.status - Task status.
  * @param {string} task.title - Task title.
+ * @param {number} userId - User ID.
  * @returns {Promise<Object>} The database update result.
  */
 const updateTask = async (id, task, userId) => {
@@ -142,9 +149,10 @@ const updateTask = async (id, task, userId) => {
 };
 
 /**
- * Deletes a task by its ID.
+ * Delete a task by its ID.
  *
  * @param {number} id - The task ID.
+ * @param {number} userId - User ID.
  * @returns {Promise<Object>} The database delete result.
  */
 const deleteTask = async (id, userId) => {
@@ -157,9 +165,10 @@ const deleteTask = async (id, userId) => {
 };
 
 /**
- * Searches for tasks by title.
+ * Search for tasks by title.
  *
  * @param {string} keyword - The keyword to search for.
+ * @param {number} userId - User ID.
  * @returns {Promise<Array>} An array of matching tasks.
  */
 const searchTask = async (keyword, userId) => {
@@ -175,7 +184,7 @@ const searchTask = async (keyword, userId) => {
 
 module.exports = {
     createTask,
-    getAllTask,
+    getAllTasks,
     getTaskById,
     getTaskByCategory,
     getTaskByStatus,

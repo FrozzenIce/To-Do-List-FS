@@ -12,7 +12,7 @@ module.exports = async (req, res, next) => {
         if (category.length === 0) {
             const error = new Error('Category not found')
             error.status = 404;
-            return next(err);
+            return next(error);
         }
 
         req.category = category[0];

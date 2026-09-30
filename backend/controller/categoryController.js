@@ -2,6 +2,12 @@ const Category = require('../models/Category');
 
 /**
  * Create category
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Sends a JSON response after creating the category.
+ * @throws {Error} Passes any unexpected error to the error-handling middleware.
  */
 exports.createCategory = async (req, res, next) => {
     try {
@@ -10,7 +16,7 @@ exports.createCategory = async (req, res, next) => {
 
         const existingCategoryName = await Category.getCategoryByName(categoryName, userId);
         if (existingCategoryName.length > 0) {
-            const creationError = new Error('Category with name already exsits');
+            const creationError = new Error('Category with name already exists');
             creationError.status = 409;
             return next(creationError);
         }
@@ -30,6 +36,12 @@ exports.createCategory = async (req, res, next) => {
 
 /**
  * Delete category
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Sends a JSON response after deleting the category.
+ * @throws {Error} Passes any unexpected error to the error-handling middleware.
  */
 exports.deleteCategory = async (req, res, next) => {
     try {
@@ -49,6 +61,12 @@ exports.deleteCategory = async (req, res, next) => {
 
 /**
  * Update category
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Sends a JSON response after updating the category.
+ * @throws {Error} Passes any unexpected error to the error-handling middleware.
  */
 exports.updateCategory = async (req, res, next) => {
     try {
@@ -75,8 +93,15 @@ exports.updateCategory = async (req, res, next) => {
 }
 
 /**
- * Get All Categories
+ * Get all categories
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Sends a JSON response containing all categories.
+ * @throws {Error} Passes any unexpected error to the error-handling middleware.
  */
+
 exports.getAllCategories = async (req, res, next) => {
     try {
         const userId = req.user.user_id;
@@ -94,7 +119,13 @@ exports.getAllCategories = async (req, res, next) => {
 }
 
 /**
- * Get Category By Id
+ * Get category by ID
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Sends a JSON response containing the category.
+ * @throws {Error} Passes any unexpected error to the error-handling middleware.
  */
 exports.getCategoryById = async (req, res, next) => {
     try {

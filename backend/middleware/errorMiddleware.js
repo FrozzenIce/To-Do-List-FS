@@ -5,6 +5,6 @@ module.exports = (err, req, res, next) => {
 
     res.status(status).json({
         success: false,
-        message: err.message || 'Internal server error'
+        message: err.message || 'Internal Server Error'
     });
 }

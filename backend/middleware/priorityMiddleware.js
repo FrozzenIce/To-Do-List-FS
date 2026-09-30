@@ -1,8 +1,5 @@
 const Priority = require('../models/Priority');
 
-/**
- * 
- */
 module.exports = async (req, res, next) => {
     try {
         const priorityId = req.params.priorityId;

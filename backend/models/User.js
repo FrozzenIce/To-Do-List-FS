@@ -35,9 +35,10 @@ const createUser = async (user) => {
 };
 
 /**
- * Finds a user by username or email.
+ * Find a user by username or email.
  *
  * @param {string} identifier - Username or email used to find the user.
+ * @param {boolean} includePassword - Whether to include the user's hashed password.
  * @returns {Promise<Array>} An array containing the matching user records.
  */
 const findByEmailOrUsername = async (identifier, includePassword = false) => {
@@ -54,10 +55,11 @@ const findByEmailOrUsername = async (identifier, includePassword = false) => {
 };
 
 /**
- * Finds a user by user id
- * 
- * @param {number} id - User Id
- * @return {Promise<Array>} - An array containing the matching user record.
+ * Find a user by user ID.
+ *
+ * @param {number} id - User ID.
+ * @param {boolean} includePassword - Whether to include the user's hashed password.
+ * @returns {Promise<Array>} An array containing the matching user record.
  */
 const findUserById = async (id, includePassword = false) => {
   const columns = includePassword
@@ -73,24 +75,24 @@ const findUserById = async (id, includePassword = false) => {
 };
 
 /**
- * Updates a user detail
- * 
- * @param {number} id - User Id
+ * Update user details.
+ *
+ * @param {number} id - User ID.
  * @param {Object} updates - Update information.
  * @param {string} updates.username - Updated username of the user.
  * @param {string} updates.email - Updated email address of the user.
  * @param {string} updates.password - Updated hashed password of the user.
- * @return {Promise<Object>} - An array containing the matching user record.
+ * @returns {Promise<Object>} The database update result.
  */
 const ALLOWED_UPDATE_FIELDS = {
   username: "username",
   email: "email",
-  password: "password"
+  password: "password",
 };
 const updateUser = async (id, updates) => {
   const entries = Object.entries(updates)
     .filter(([key, value]) => {
-      return ALLOWED_UPDATE_FIELDS[key] && value != undefined;
+      return ALLOWED_UPDATE_FIELDS[key] && value !== undefined;
     });
 
   if (entries.length === 0) {
@@ -114,10 +116,10 @@ const updateUser = async (id, updates) => {
 };
 
 /**
- * Deletes a user by user id
- * 
- * @param {number} id - User Id
- * @return {Promise<Object>} - An array containing the matching user record.
+ * Delete a user by user ID.
+ *
+ * @param {number} id - User ID.
+ * @returns {Promise<Object>} The database delete result.
  */
 const deleteUser = async (id) => {
   const sql = `

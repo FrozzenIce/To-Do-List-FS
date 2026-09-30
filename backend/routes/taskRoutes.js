@@ -7,7 +7,7 @@ const validationMiddleware = require('../middleware/validationMiddleware');
 const taskController = require('../controller/taskController');
 
 router.post('/', authMiddleware, validationMiddleware.validateTaskCreate, taskController.createTask);
-router.get('/', authMiddleware, taskController.getAllTask);
+router.get('/', authMiddleware, taskController.getAllTasks);
 
 router.get('/category/:categoryId', authMiddleware, taskController.getTaskByCategory);
 router.get('/priority/:priorityId', authMiddleware, taskController.getTaskByPriority);

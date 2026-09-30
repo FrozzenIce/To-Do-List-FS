@@ -1,7 +1,11 @@
 const Task = require('../models/Task');
 
 /**
- * Create Task
+ * Create a task.
+ *
+ * @param {Object} req.body - Task data submitted by the user.
+ * @returns {Promise<void>} Sends a JSON response containing the created task ID.
+ * @throws {Error} Passes errors from task creation to the error-handling middleware.
  */
 exports.createTask = async (req, res, next) => {
     try {
@@ -32,7 +36,11 @@ exports.createTask = async (req, res, next) => {
 }
 
 /**
- * Update task
+ * Update a task.
+ *
+ * @param {Object} req.body - Updated task data submitted by the user.
+ * @returns {Promise<void>} Sends a JSON response confirming that the task was updated.
+ * @throws {Error} Passes errors from task updating to the error-handling middleware.
  */
 exports.updateTask = async (req, res, next) => {
     try {
@@ -62,7 +70,10 @@ exports.updateTask = async (req, res, next) => {
 }
 
 /**
- * Delete task
+ * Delete a task.
+ *
+ * @returns {Promise<void>} Sends a JSON response confirming that the task was deleted.
+ * @throws {Error} Passes errors from task deletion to the error-handling middleware.
  */
 exports.deleteTask = async (req, res, next) => {
     try {
@@ -81,13 +92,16 @@ exports.deleteTask = async (req, res, next) => {
 }
 
 /**
- * Get All Tasks
+ * Get all tasks for the authenticated user.
+ *
+ * @returns {Promise<void>} Sends a JSON response containing the user's tasks.
+ * @throws {Error} Passes errors from retrieving tasks to the error-handling middleware.
  */
-exports.getAllTask = async (req, res, next) => {
+exports.getAllTasks = async (req, res, next) => {
     try {
         const userId = req.user.user_id;
 
-        const tasks = await Task.getAllTask(userId);
+        const tasks = await Task.getAllTasks(userId);
         if (tasks.length === 0) {
             return res.json({
                 success: true,
@@ -106,7 +120,10 @@ exports.getAllTask = async (req, res, next) => {
 }
 
 /**
- * Get Task by Id
+ * Get a task by ID.
+ *
+ * @returns {Promise<void>} Sends a JSON response containing the requested task.
+ * @throws {Error} Passes errors to the error-handling middleware.
  */
 exports.getTaskById = async (req, res, next) => {
     try {
@@ -121,7 +138,11 @@ exports.getTaskById = async (req, res, next) => {
 }
 
 /**
- * Get Task by Category
+ * Get tasks by category.
+ *
+ * @param {string} req.params.category - ID of the category.
+ * @returns {Promise<void>} Sends a JSON response containing the matching tasks.
+ * @throws {Error} Passes errors from retrieving tasks to the error-handling middleware.
  */
 exports.getTaskByCategory = async (req, res, next) => {
     try {
@@ -147,7 +168,11 @@ exports.getTaskByCategory = async (req, res, next) => {
 }
 
 /**
- * Get Task by Status 
+ * Get tasks by status.
+ *
+ * @param {string} req.params.status - Status used to filter tasks.
+ * @returns {Promise<void>} Sends a JSON response containing the matching tasks.
+ * @throws {Error} Passes errors from retrieving tasks to the error-handling middleware.
  */
 exports.getTaskByStatus = async (req, res, next) => {
     try {
@@ -173,7 +198,11 @@ exports.getTaskByStatus = async (req, res, next) => {
 }
 
 /**
- * Get Task by Priority
+ * Get tasks by priority.
+ *
+ * @param {string} req.params.priorityId - ID of the priority used to filter tasks.
+ * @returns {Promise<void>} Sends a JSON response containing the matching tasks.
+ * @throws {Error} Passes errors from retrieving tasks to the error-handling middleware.
  */
 exports.getTaskByPriority = async (req, res, next) => {
     try {
@@ -199,7 +228,11 @@ exports.getTaskByPriority = async (req, res, next) => {
 }
 
 /**
- * 
+ * Search for tasks by keyword.
+ *
+ * @param {string} req.query.keyword - Keyword used to search for tasks.
+ * @returns {Promise<void>} Sends a JSON response containing the matching tasks.
+ * @throws {Error} Passes errors from searching tasks to the error-handling middleware.
  */
 exports.searchTask = async (req, res, next) => {
     try {

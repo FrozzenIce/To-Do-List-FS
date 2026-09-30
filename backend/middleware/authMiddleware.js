@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 
+
 module.exports = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -18,7 +19,7 @@ module.exports = (req, res, next) => {
     } catch (err) {
         return res.status(401).json({
             success: false,
-            message: 'Access Denied: Invalid or expired token'
+            message: 'Access Denied: Invalid or expired token.'
         });
     }
 }

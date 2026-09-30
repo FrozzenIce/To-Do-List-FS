@@ -4,7 +4,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 /**
- *  User Login Handler
+ * User Login Handler
+ *
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @param {import('express').NextFunction} next - Express error-handling callback.
+ * @returns {Promise<void>} Sends a JSON response containing an authentication token.
  */
 exports.login = async (req, res, next) => {
     try {
@@ -22,7 +27,7 @@ exports.login = async (req, res, next) => {
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            const authError = new Error('Invalid Credentials');
+            const authError = new Error('Invalid credentials');
             authError.status = 401;
             return next(authError);
         }
@@ -48,15 +53,21 @@ exports.login = async (req, res, next) => {
 };
 
 /**
- * Change password
+ * Change Password
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Sends a JSON response after updating the password.
+ * @throws {Error} Passes any unexpected error to the error-handling middleware.
  */
 exports.changePassword = async (req, res, next) => {
     try {
         const userId = req.user.user_id;
         const { currentPassword, newPassword } = req.body;
 
-        const results = await User.findByEmailOrUsername(req.user.username, true);
-        if (results.length === 0) return next(new Error('User not found'));
+        const result = await User.findByEmailOrUsername(req.user.username, true);
+        if (result.length === 0) return next(new Error('User not found'));
         const user = result[0];
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
@@ -79,6 +90,12 @@ exports.changePassword = async (req, res, next) => {
 
 /**
  * Create a new user
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Sends a JSON response after creating the user account.
+ * @throws {Error} Passes any unexpected error to the error-handling middleware.
  */
 exports.register = async (req, res, next) => {
     try {
@@ -110,7 +127,7 @@ exports.register = async (req, res, next) => {
 
         res.status(201).json({
             success: true,
-            message: 'User account created successfully',
+            message: 'User account created',
             userId: result.insertId
         });
     } catch (err) {
@@ -119,7 +136,13 @@ exports.register = async (req, res, next) => {
 }
 
 /**
- * Delete an user
+ * Delete a user
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Sends a JSON response after deleting the user.
+ * @throws {Error} Passes any unexpected error to the error-handling middleware.
  */
 exports.deleteUser = async (req, res, next) => {
     try {
@@ -152,6 +175,12 @@ exports.deleteUser = async (req, res, next) => {
 
 /**
  * Update user details
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Sends a JSON response after updating the user's details.
+ * @throws {Error} Passes any unexpected error to the error-handling middleware.
  */
 exports.editUserDetails = async (req, res, next) => {
     try {
@@ -162,12 +191,12 @@ exports.editUserDetails = async (req, res, next) => {
             const editError = 'Username or Email';
         }
 
-        const existsingUsername = await User.findByEmailOrUsername(username);
+        const existingUsername = await User.findByEmailOrUsername(username);
         const existsingEmail = await User.findByEmailOrUsername(email);
 
         const result = await User.findByEmailOrUsername(req.user.username, true);
         if (result.length === 0) {
-            const editError = 'User not found';
+            const editError = new Error('User not found');
             return next(editError);
         }
 
@@ -179,7 +208,7 @@ exports.editUserDetails = async (req, res, next) => {
             return next(editError);
         }
 
-        if (existsingUsername.length > 0 && existsingUsername[0].user_id !== userId) {
+        if (existingUsername.length > 0 && existingUsername[0].user_id !== userId) {
             const editError = new Error('Username already taken');
             editError.status = 409;
             return next(editError);
@@ -206,7 +235,13 @@ exports.editUserDetails = async (req, res, next) => {
 }
 
 /**
- * Get Me
+ * Get current user
+ *
+ * @param {Object} req - Express request object.
+ * @param {Object} res - Express response object.
+ * @param {Function} next - Express next middleware function.
+ * @returns {Promise<void>} Sends a JSON response containing the current user's details.
+ * @throws {Error} Passes any unexpected error to the error-handling middleware.
  */
 exports.getMe = async (req, res, next) => {
     try {

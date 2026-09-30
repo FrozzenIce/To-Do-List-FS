@@ -1,8 +1,5 @@
 const Task = require('../models/Task');
 
-/**
- * 
- */
 module.exports = async (req, res, next) => {
     try {
         const userId = req.user.user_id;
@@ -10,7 +7,7 @@ module.exports = async (req, res, next) => {
 
         const task = await Task.getTaskById(taskId, userId);
         if (task.length === 0) {
-            const error = new Error('Task not found')
+            const error = new Error('Task not found');
             error.status = 404;
             return next(error);
         }
