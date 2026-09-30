@@ -16,12 +16,11 @@ exports.createCategory = async (req, res, next) => {
         }
 
         const result = await Category.createCategory(categoryName, userId);
-        const category = result[0];
 
         res.json({
             success: true,
             message: 'Category created',
-            categoryId: category.insertId
+            categoryId: result.insertId
         });
     } catch (err) {
         next(err);
@@ -96,7 +95,7 @@ exports.getAllCategories = async (req, res, next) => {
     try {
         const userId = req.user.user_id;
 
-        const results = await Category.getAllCategories(userId);
+        const categories = await Category.getAllCategories(userId);
         if(results.length === 0) {
             const getError = new Error('Categories not found');
             getError.status = 404;
@@ -105,7 +104,7 @@ exports.getAllCategories = async (req, res, next) => {
 
         res.json({
             success: true,
-            results
+            categories
         })
 
     } catch (err) {
@@ -121,7 +120,7 @@ exports.getCategoryById = async (req, res, next) => {
         const userId = req.user.user_id;
         const categoryId = req.category.category_id;
 
-        const result = await Category.getCategoryById(categoryId, userId);
+        const category = await Category.getCategoryById(categoryId, userId);
         if(result.length === 0) {
             const getError = new Error('Category not found');
             getError.status = 404;
@@ -130,7 +129,7 @@ exports.getCategoryById = async (req, res, next) => {
 
         res.json({
             success: true,
-            category: result[0]
+            category: category[0]
         })
 
     } catch (err) {
