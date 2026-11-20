@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors")
 
 const authRoutes = require('./routes/authRoutes');
 const taskRoutes = require('./routes/taskRoutes');
@@ -7,6 +8,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const priorityRoutes = require('./routes/priorityRoutes');
 
 app.use(express.json());
+app.use(cors());
 
 // API ROUTES
 app.use('/api/auth', authRoutes);
